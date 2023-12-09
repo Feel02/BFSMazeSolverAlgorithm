@@ -1,2 +1,2 @@
 # BFSMazeSolverAlgorithm
-Breath First Search Algorith with java
+Breath First Search Algorithm with java
