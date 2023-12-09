@@ -10,34 +10,35 @@
 import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 
-public class BFS_Solver extends Solver
+public class DFS_Solver extends Solver
 {
 	/*
 	 * Constructor
-	 * m: Maze to solve
+	 * m: The maze to solve
 	 */
-	public BFS_Solver(Maze m)
+	public DFS_Solver(Maze m)
 	{
 		this.maze = m;
 		this.result = "";
-		this.frontier = new LinkedList<Node<Maze>>();
-		this.closedSquares = new LinkedList<Square>();
+		this.frontier = new Stack<Node<Maze>>();
+		this.closedSquares = new Stack<Square>();
 	}
 	
 	public String solve()
-	{
+	{            
 		Boolean endfound = false;
 		this.nodesCounter = 0;
 		this.pathLength = 0;
 		
-		//Init maze
-		this.closedSquares.clear(); //list for the visited ones aka explored set
+		//Init maze 
+		this.closedSquares.clear(); //stack for the visited ones aka explored set
 		this.maze.initMaze();
 		
 		//Init frontier
-		this.frontier.clear(); //frontier is fringe (queue implemented as linkedlist)
-		this.frontier.add(new Node<Maze>(this.maze)); //Add initial state
+		this.frontier.clear(); //frontier is fringe (stack)
+		((Stack<Node<Maze>>) this.frontier).push(new Node<Maze>(this.maze)); //Add first state
 		
 		//Measure run time
 		long startTime = System.currentTimeMillis();
@@ -46,13 +47,13 @@ public class BFS_Solver extends Solver
 		while(!endfound)
 		{
                         //you should check if there exist a node to expand
-			if(this.frontier.isEmpty()) //Check if the frontier is empty
+			if(this.frontier.isEmpty())
 				break;
 			
 			else
 			{
-                                //You should first remove it from the list (you visit it)
-				Node<Maze> current = ((LinkedList<Node<Maze>>) this.frontier).removeFirst(); //Get first node from the frontier
+                                //You should first pop it from the stack (you visit it)
+				Node<Maze> current = ((Stack<Node<Maze>>) this.frontier).pop(); //Get first node from the frontier
 				this.maze = (Maze) current.getContent(); //Get maze from the node
 				Square currState = this.maze.getCurrState(); //Get current state from the maze
 				
@@ -61,7 +62,7 @@ public class BFS_Solver extends Solver
 				{
 					//You should create a new Node<T> for this maze to be able to assign a new father to it
 					//Set current as father (parent) for all next states
-					//add the goal (end) so you can reach starting point by using fathers (parents)
+					//push the goal (end) so you can reach starting point by using fathers (parents)
 					endfound = true;
 				}				
 				else
@@ -69,24 +70,25 @@ public class BFS_Solver extends Solver
 					LinkedList<Node<Maze>> nexts = this.getNextSquares(); //Get next possible states
 					
                                         //now the current one was visited (that you want to explore its next states)
-                                        //So it should be added to other list (which keeps track the visited ones) 
+                                        //So it should be pushed to other stack (which keeps track the visited ones) 
                                         //do not fotget to check if it is already in
                                         //do not forget to set * for the visited one (current one) (is it gonna be the Node or Square?)
                                         
-					
+					                                        
                                         //You may want to use an iterator to reach every possible next state one by one 
                                         //or you may want to get size of the next possible states and reach them accordingly
 					
-                                        
-					//Add next possible states to list 
-                                        //(think about which queue it could be.)
+					                                        
+                                        //Add next possible states to stack 
+                                        //(think about which stack it could be.)
                                         //Do not forget to add all next possible states (at most they are: w s e n)
-                                        //-> to be able to have w s e n, you should iterate it from start to end and add it like that
-                                        //Do not forget to set father (parent) node of the added ones before adding (as current node)
+                                        //-> to be able to have w s e n, you should iterate it from end to start and push it like that
+                                        //Do not forget to set father (parent) node of the pushed ones before pushing (as current node)
                                         //Do not forget to increment nodesCounter
 					
+                                        
+                                        //You may need typecasting for the Stack (before pushing) as can be observed from given codes
 				}
-				
 			}
 		}
 		
@@ -94,18 +96,21 @@ public class BFS_Solver extends Solver
 		
 		long time = endTime - startTime;
 		
-		this.result = "    ____                      ____  __       _______           __     _____                      __  \r\n" + 
-				"   / __ )________  ____ _____/ / /_/ /_     / ____(_)_________/ /_   / ___/___  ____ ___________/ /_ \r\n" + 
-				"  / __  / ___/ _ \\/ __ `/ __  / __/ __ \\   / /_  / / ___/ ___/ __/   \\__ \\/ _ \\/ __ `/ ___/ ___/ __ \\\r\n" + 
-				" / /_/ / /  /  __/ /_/ / /_/ / /_/ / / /  / __/ / / /  (__  ) /_    ___/ /  __/ /_/ / /  / /__/ / / /\r\n" + 
-				"/_____/_/   \\___/\\__,_/\\__,_/\\__/_/ /_/  /_/   /_/_/  /____/\\__/   /____/\\___/\\__,_/_/   \\___/_/ /_/ \n";
-	
+		this.result = "    ____             __  __       _______           __     _____                      __  \r\n" + 
+				"   / __ \\___  ____  / /_/ /_     / ____(_)_________/ /_   / ___/___  ____ ___________/ /_ \r\n" + 
+				"  / / / / _ \\/ __ \\/ __/ __ \\   / /_  / / ___/ ___/ __/   \\__ \\/ _ \\/ __ `/ ___/ ___/ __ \\\r\n" + 
+				" / /_/ /  __/ /_/ / /_/ / / /  / __/ / / /  (__  ) /_    ___/ /  __/ /_/ / /  / /__/ / / /\r\n" + 
+				"/_____/\\___/ .___/\\__/_/ /_/  /_/   /_/_/  /____/\\__/   /____/\\___/\\__,_/_/   \\___/_/ /_/ \r\n" + 
+				"          /_/                                                                             \n";
+                //You should add the result to the String variable "result" 
+                //which is going to be printed to a text file
 		if(endfound)
 		{
+                        //give path information first
 			this.maze.resetGrid();
-			Node<Maze> revertedTree = ((LinkedList<Node<Maze>>) this.frontier).removeLast();
+			Node<Maze> revertedTree = ((Stack<Node<Maze>>) this.frontier).pop();
 			
-			revertedTree = revertedTree.getFather();
+			revertedTree = revertedTree.getFather().getFather();
 			this.result += "Path: " + this.maze.getEnd().toString() + "(End) <- ";
 			this.pathLength++;
 			
@@ -157,11 +162,11 @@ public class BFS_Solver extends Solver
 	public String getResult()
 	{
 		if(result == "")
-			return "No resolution computed, please use BFS_Solver.solve() first";
+			return "No resolution computed, please use DFS_Solver.solve() first";
 		else
 			return this.result;
 	}
-	
+
 	public AbstractCollection<Node<Maze>> getFrontier() 
 	{
 		return this.frontier;
