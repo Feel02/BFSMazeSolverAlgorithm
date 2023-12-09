@@ -3,9 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+/**
+ *
+ * @author 4hm3t
+ */
 import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class BFS_Solver extends Solver
 {
@@ -42,45 +47,32 @@ public class BFS_Solver extends Solver
 		while(!endfound)
 		{
                         //you should check if there exist a node to expand
-			if(this.frontier.isEmpty()) //Check if the frontier is empty
+			if(this.frontier.isEmpty()) 
 				break;
 			
-			else
-			{
-                                //You should first remove it from the list (you visit it)
-				Node<Maze> current = ((LinkedList<Node<Maze>>) this.frontier).removeFirst(); //Get first node from the frontier
-				this.maze = (Maze) current.getContent(); //Get maze from the node
-				Square currState = this.maze.getCurrState(); //Get current state from the maze
-				
-                                //checking if we have found the solution
-				if(currState.getLine() == this.maze.getEnd().getLine() && currState.getCol() == this.maze.getEnd().getCol())
-				{
-					//You should create a new Node<T> for this maze to be able to assign a new father to it
-					//Set current as father (parent) for all next states
-					//add the goal (end) so you can reach starting point by using fathers (parents)
+			else{     
+				Node<Maze> current = ((LinkedList<Node<Maze>>) this.frontier).removeFirst(); 
+				this.maze = (Maze) current.getContent(); 
+				Square currState = this.maze.getCurrState(); 
+
+				if(currState.getLine() == this.maze.getEnd().getLine() && currState.getCol() == this.maze.getEnd().getCol()){
 					endfound = true;
+					((LinkedList<Node<Maze>>)this.frontier).addLast(current); 
 				}				
-				else
-				{
-					LinkedList<Node<Maze>> nexts = this.getNextSquares(); //Get next possible states
+				else{
+					LinkedList<Node<Maze>> nexts = this.getNextSquares(); 
 					
-                                        //now the current one was visited (that you want to explore its next states)
-                                        //So it should be added to other list (which keeps track the visited ones) 
-                                        //do not fotget to check if it is already in
-                                        //do not forget to set * for the visited one (current one) (is it gonna be the Node or Square?)
-                                        
-					
-                                        //You may want to use an iterator to reach every possible next state one by one 
-                                        //or you may want to get size of the next possible states and reach them accordingly
-					
-                                        
-					//Add next possible states to list 
-                                        //(think about which queue it could be.)
-                                        //Do not forget to add all next possible states (at most they are: w s e n)
-                                        //-> to be able to have w s e n, you should iterate it from start to end and add it like that
-                                        //Do not forget to set father (parent) node of the added ones before adding (as current node)
-                                        //Do not forget to increment nodesCounter
-					
+					Iterator<Node<Maze>> nextsIterator = nexts.iterator();						//iterator
+
+					if(!(((LinkedList<Square>)this.closedSquares).contains(currState))){		//if the state is new
+						while (nextsIterator.hasNext()){										//for every nextiterator
+							Node<Maze> nextNode = nextsIterator.next();							//create node
+							nextNode.setFather(current); 										//add the father
+							((LinkedList<Node<Maze>>)this.frontier).addLast(nextNode); 			//add the node
+							nodesCounter++;
+						}
+						((LinkedList<Square>)this.closedSquares).add(currState); 				//lastly add to the closed
+					}
 				}
 				
 			}
