@@ -56,9 +56,9 @@ public class DFS_Solver extends Solver
                                 //checking if we have found the solution
 				if(currState.getLine() == this.maze.getEnd().getLine() && currState.getCol() == this.maze.getEnd().getCol())
 				{
-					//You should create a new Node<T> for this maze to be able to assign a new father to it
-					//Set current as father (parent) for all next states
-					//push the goal (end) so you can reach starting point by using fathers (parents)
+					Node<Maze> temp = new Node<Maze>(this.maze);
+					temp.setFather(current); //Set current as father (parent) for all next states
+					((Stack<Node<Maze>>) this.frontier).push(temp); //push the goal (end) so you can reach starting point by using fathers (parents)
 					endfound = true;
 				}				
 				else
@@ -69,20 +69,34 @@ public class DFS_Solver extends Solver
                                         //So it should be pushed to other stack (which keeps track the visited ones) 
                                         //do not fotget to check if it is already in
                                         //do not forget to set * for the visited one (current one) (is it gonna be the Node or Square?)
-                                        
-					                                        
-                                        //You may want to use an iterator to reach every possible next state one by one 
-                                        //or you may want to get size of the next possible states and reach them accordingly
+                                        if(!this.closedSquares.contains(currState))
+					{
+						((Stack<Square>) this.closedSquares).push(currState);
+						currState.setAttribute("*");
 					
 					                                        
-                                        //Add next possible states to stack 
-                                        //(think about which stack it could be.)
-                                        //Do not forget to add all next possible states (at most they are: w s e n)
-                                        //-> to be able to have w s e n, you should iterate it from end to start and push it like that
-                                        //Do not forget to set father (parent) node of the pushed ones before pushing (as current node)
-                                        //Do not forget to increment nodesCounter
-					
-                                        
+                                                //You may want to use an iterator to reach every possible next state one by one 
+                                                //or you may want to get size of the next possible states and reach them accordingly
+                                                Iterator<Node<Maze>> x = nexts.descendingIterator();
+
+                                                //Add next possible states to stack 
+                                                //(think about which stack it could be. Is it gonna be frontier or closedSquares?)
+                                                //Do not forget to add all next possible states (at most they are: w s e n)
+                                                //-> to be able to have w s e n, you should iterate it from end to start and push it like that
+                                                //Do not forget to set father (parent) node of the pushed ones before pushing (as current node)
+                                                //Do not forget to increment nodesCounter
+                                                while(x.hasNext())
+                                                {
+                                                        Node<Maze> neighbor = x.next();
+                                                        if (!this.closedSquares.contains(neighbor.getContent().getCurrState())) {
+                                                                neighbor.setFather(current); //Set current as father for all next states
+                                                                ((Stack<Node<Maze>>) this.frontier).push(neighbor);
+                                                                this.nodesCounter++;
+                                                        }
+                                                        
+                                                        
+                                                }                                       
+                                        }
                                         //You may need typecasting for the Stack (before pushing) as can be observed from given codes
 				}
 			}
